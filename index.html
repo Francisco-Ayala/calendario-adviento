@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Nuestro Adviento</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Concepto: 24 ventanas sobre una noche de verano paraguaya; se encienden de a una, con luciernagas flotando detras. */
+:root {
+  --bg: #EDF2F5;
+  --fg: #16233B;
+  --muted: #55657D;
+  --surface: #FFFFFF;
+  --line: #CCD8E2;
+  --accent: #C23B5B;
+  --glow: #F2B04A;
+  --on-glow: #2E1D05;
+  --intro-top: #0B1330; --intro-bottom: #26306A; --intro-muted: #B7C3E3; --snow: #F4F8FC;
+  --env-body: #B3324F; --env-body-dark: #8F2640; --env-flap: #C7405F; --env-flap-open: #8A2740; --env-inside: #6E1D33;
+  --paper: #FBF6EE; --paper-ink: #4A2B35; --pine: #1E5A44; --pine-light: #6FBF8F;
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1630; --fg: #EAF0FA; --muted: #9DAAC4; --surface: #18234A; --line: #2B3869; --accent: #F0708F; --on-glow: #2A1B04;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1630; --fg: #EAF0FA; --muted: #9DAAC4; --surface: #18234A; --line: #2B3869; --accent: #F0708F; --on-glow: #2A1B04;
+  color-scheme: dark;
+}
+html, body { min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 32px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+#fireflies { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.2rem, 9vw, 3.6rem); line-height: 1.02; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+.lede { color: var(--muted); max-width: 52ch; margin: 0; }
+.status { display: flex; flex-direction: column; gap: 8px; }
+.status-text { font-weight: 500; margin: 0; min-height: 1.5em; }
+.bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bar > span { display: block; height: 100%; width: 0; background: var(--glow); border-radius: inherit; transition: width .5s ease; }
+.testbanner { border: 1px dashed var(--accent); color: var(--accent); border-radius: 10px; padding: 8px 12px; font-size: 0.88rem; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; } }
+.door {
+  position: relative; aspect-ratio: 1 / 1.08; border-radius: 12px; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.door:hover { transform: translateY(-2px); }
+.door:focus-visible, .close:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.door .n { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.5rem, 6vw, 2.1rem); font-variant-numeric: tabular-nums; }
+.door .ico { position: absolute; top: 7px; right: 7px; display: flex; opacity: .85; }
+.door[data-state="locked"] { color: var(--muted); background: transparent; border-style: dashed; }
+.door[data-state="ready"] { border-color: var(--glow); }
+.door[data-state="today"] { border-color: var(--glow); border-width: 2.5px; animation: pulse 2.4s ease-in-out infinite; }
+.door[data-state="opened"] { background: var(--glow); border-color: var(--glow); color: var(--on-glow); }
+.door[data-final="1"][data-state="ready"], .door[data-final="1"][data-state="today"] { border-color: var(--accent); }
+.door[data-final="1"] .n { color: var(--accent); }
+.door[data-final="1"][data-state="opened"] { background: var(--accent); border-color: var(--accent); }
+.door[data-final="1"][data-state="opened"] .n { color: #fff; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(242,176,74,.55); } 50% { box-shadow: 0 0 0 8px rgba(242,176,74,0); } }
+footer { color: var(--muted); font-size: 0.9rem; margin: 0; }
+dialog {
+  border: 0; padding: 0; border-radius: 18px; width: calc(100% - 32px); max-width: 440px;
+  background: var(--surface); color: var(--fg); box-shadow: 0 24px 60px rgba(5,10,30,.45);
+}
+dialog::backdrop { background: rgba(8,14,32,.62); }
+dialog[open] { animation: pop .3s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+.card { padding: 26px 24px 22px; display: flex; flex-direction: column; gap: 12px; }
+.card-top { display: flex; align-items: center; gap: 12px; }
+.badge { width: 52px; height: 52px; border-radius: 50%; background: var(--glow); color: var(--on-glow); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; font-variant-numeric: tabular-nums; flex: none; }
+.badge[data-final="1"] { background: var(--accent); color: #fff; }
+.meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.chip { align-self: flex-start; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.date { color: var(--muted); font-size: 0.85rem; }
+.card h2 { font-family: var(--font-display); font-size: 1.55rem; line-height: 1.15; letter-spacing: -0.01em; margin: 4px 0 0; text-wrap: balance; }
+.card p { margin: 0; font-size: 1.05rem; line-height: 1.6; max-width: 60ch; }
+.frase { margin: 6px 0 0; padding: 14px 16px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; line-height: 1.35; color: var(--accent); text-wrap: balance; }
+.close { align-self: flex-end; margin-top: 8px; font: inherit; font-weight: 600; background: var(--fg); color: var(--bg); border: 0; border-radius: 10px; padding: 10px 18px; cursor: pointer; }
+.music { position: fixed; z-index: 5; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 0.9rem; font-weight: 600; background: var(--surface); color: var(--fg); border: 1.5px solid var(--line); border-radius: 99px; padding: 8px 14px; cursor: pointer; }
+.music:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.music[aria-pressed="true"] { background: var(--glow); border-color: var(--glow); color: var(--on-glow); }
+.music-ico { font-size: 1.05rem; line-height: 1; }
+.hold { opacity: 0; }
+.wrap { transition: opacity 1s ease; }
+body:has(#intro:not([hidden])) { overflow: hidden; }
+.intro { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 20; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: linear-gradient(180deg, var(--intro-top), var(--intro-bottom));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px)); transition: opacity .9s ease; }
+.intro.out { opacity: 0; pointer-events: none; }
+#snow { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.envwrap { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 26px; transition: opacity .8s ease, transform .8s ease; }
+.intro.snow .envwrap { opacity: 0; transform: translateY(-24px) scale(.9); pointer-events: none; }
+.envbtn { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; display: block; animation: bob 3.2s ease-in-out infinite; }
+.envbtn:focus-visible { outline: 3px solid var(--glow); outline-offset: 8px; border-radius: 8px; }
+.intro.open .envbtn { animation: none; }
+.env { position: relative; display: block; width: min(80vw, 330px); height: calc(min(80vw, 330px) * 0.667); perspective: 900px; }
+.env > * { position: absolute; display: block; }
+.env-back { top: 0; right: 0; bottom: 0; left: 0; background: var(--env-inside); border-radius: 6px; }
+.letter { left: 7%; right: 7%; top: 7%; height: 82%; z-index: 1; background: var(--paper); border-radius: 4px; color: var(--paper-ink);
+  display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; transition: transform .9s .55s cubic-bezier(.2,.8,.2,1); }
+.letter b { font-family: var(--font-display); font-size: 1.15rem; }
+.letter span { font-size: .85rem; }
+.intro.open .letter { transform: translateY(-64%); }
+.env-front { top: 0; right: 0; bottom: 0; left: 0; z-index: 2; border-radius: 6px; background: linear-gradient(180deg, var(--env-body), var(--env-body-dark)); clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%); }
+.env-to { left: 0; right: 0; bottom: 13%; z-index: 3; text-align: center; font-family: var(--font-display); font-weight: 600; font-size: clamp(1rem, 4.6vw, 1.3rem); color: var(--paper); }
+.flap { left: 0; right: 0; top: 0; height: 56%; z-index: 4; background: var(--env-flap); clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: 50% 0;
+  transition: transform .7s ease, background .7s ease, z-index 0s .3s; }
+.intro.open .flap { transform: rotateX(180deg); z-index: 0; background: var(--env-flap-open); }
+.seal { left: 50%; top: 56%; width: 44px; height: 44px; margin: -22px 0 0 -22px; z-index: 5; border-radius: 50%; background: var(--glow); color: var(--on-glow);
+  display: flex !important; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,.35); transition: opacity .3s, transform .4s; }
+.intro.open .seal { opacity: 0; transform: scale(.6); }
+.hint { margin: 0; color: var(--intro-muted); font-size: .95rem; letter-spacing: .05em; animation: blink 2.4s ease-in-out infinite; }
+.intro.open .hint { opacity: 0; animation: none; transition: opacity .3s; }
+.greet { position: absolute; z-index: 3; left: 0; right: 0; top: 46%; text-align: center; padding: 0 16px; opacity: 0; transform: translateY(-40%); pointer-events: none; transition: opacity 1s .5s ease, transform 1.4s .5s ease; }
+.intro.snow .greet { opacity: 1; transform: translateY(-50%); }
+.greet h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 11vw, 4.2rem); line-height: 1; letter-spacing: -.02em; margin: 0 0 12px; color: var(--snow); text-wrap: balance; }
+.greet p { margin: 0; color: var(--glow); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: .85rem; }
+.trees { position: absolute; left: 0; bottom: 0; z-index: 1; width: 100%; height: clamp(120px, 26vh, 230px); transform: translateY(105%); transition: transform 1.4s .3s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.intro.snow .trees { transform: none; }
+.lights { position: absolute; z-index: 1; top: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding-top: max(8px, env(safe-area-inset-top, 0px)); opacity: 0; transition: opacity 1s .4s; pointer-events: none; }
+.intro.snow .lights { opacity: 1; }
+.lights span { width: 9px; height: 9px; border-radius: 50%; animation: twinkle 1.8s ease-in-out infinite; }
+.lights span:nth-child(odd) { margin-top: 10px; }
+.lights span:nth-child(4n+1) { background: var(--glow); box-shadow: 0 0 10px var(--glow); }
+.lights span:nth-child(4n+2) { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.lights span:nth-child(4n+3) { background: var(--snow); box-shadow: 0 0 10px var(--snow); }
+.lights span:nth-child(4n) { background: var(--pine-light); box-shadow: 0 0 10px var(--pine-light); }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes blink { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes twinkle { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .envbtn, .hint, .lights span { animation: none; }
+  .intro, .envwrap, .letter, .flap, .seal, .greet, .trees, .lights, .wrap { transition: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .door, .bar > span { transition: none; }
+  .door[data-state="today"], dialog[open] { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <span class="eyebrow">Diciembre 2026</span>
+    <h1 id="titulo">Para Melany</h1>
+    <p class="lede">Aunque no nos veamos todos los días, cada día de diciembre tiene una casilla para ti. Se abren del 1 al 24, a su hora. No vale espiar.</p>
+  </header>
+  <div class="status">
+    <p class="status-text" id="status" aria-live="polite"></p>
+    <div class="bar" aria-hidden="true"><span id="barfill"></span></div>
+    <div class="testbanner" id="testbanner" hidden>Modo prueba: todas las casillas están abiertas y no se guarda nada. Toca 5 veces el título para volver al calendario real.</div>
+  </div>
+  <main class="grid" id="grid"></main>
+  <footer id="firma">De Caraguatay a Atyrá, con todo mi cariño.</footer>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="card">
+    <div class="card-top">
+      <div class="badge" id="dlg-n"></div>
+      <div class="meta"><span class="chip" id="dlg-chip"></span><span class="date" id="dlg-date"></span></div>
+    </div>
+    <h2 id="dlg-title"></h2>
+    <p id="dlg-body"></p>
+    <blockquote class="frase" id="dlg-frase"></blockquote>
+    <button class="close" id="dlg-close" type="button">Cerrar</button>
+  </div>
+</dialog>
+<div class="intro" id="intro">
+  <canvas id="snow" aria-hidden="true"></canvas>
+  <div class="lights" id="lights" aria-hidden="true"></div>
+  <div class="greet" aria-hidden="true"><h2>Feliz Navidad</h2><p id="greet-to">Para mi princesa</p></div>
+  <svg class="trees" viewBox="0 0 420 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <symbol id="pine" viewBox="0 0 100 130">
+        <rect x="45" y="112" width="10" height="16" fill="#5A3A2A"/>
+        <polygon points="50,4 28,44 72,44" fill="var(--pine)"/>
+        <polygon points="50,26 20,76 80,76" fill="var(--pine)"/>
+        <polygon points="50,52 10,112 90,112" fill="var(--pine)"/>
+        <polygon points="50,4 43,17 57,17" fill="var(--snow)"/>
+        <polygon points="50,26 41,42 59,42" fill="var(--snow)"/>
+        <polygon points="50,52 39,72 61,72" fill="var(--snow)"/>
+        <circle cx="42" cy="36" r="2.4" fill="var(--glow)"/><circle cx="60" cy="62" r="2.6" fill="var(--accent)"/>
+        <circle cx="34" cy="86" r="2.6" fill="var(--glow)"/><circle cx="68" cy="94" r="2.6" fill="var(--snow)"/>
+        <circle cx="48" cy="100" r="2.4" fill="var(--accent)"/>
+      </symbol>
+    </defs>
+    <use href="#pine" x="15" y="56" width="68" height="88"/>
+    <use href="#pine" x="88" y="88" width="40" height="52"/>
+    <use href="#pine" x="150" y="18" width="104" height="135"/>
+    <use href="#pine" x="284" y="84" width="44" height="57"/>
+    <use href="#pine" x="332" y="50" width="76" height="99"/>
+    <path d="M202 5 L204.6 11.2 L211.3 11.6 L206.1 15.9 L207.8 22.4 L202 18.8 L196.2 22.4 L197.9 15.9 L192.7 11.6 L199.4 11.2Z" fill="var(--glow)"/>
+    <rect x="0" y="144" width="420" height="16" fill="var(--snow)"/>
+  </svg>
+  <div class="envwrap" id="envwrap">
+    <button type="button" class="envbtn" id="envbtn" aria-label="Abrir el sobre">
+      <span class="env">
+        <span class="env-back"></span>
+        <span class="letter"><b>24 casillas</b><span>una por día, para ti</span></span>
+        <span class="env-front"></span>
+        <span class="env-to" id="env-to">Para mi princesa</span>
+        <span class="flap"></span>
+        <span class="seal"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.4 5c2 0 3.6 1.1 4.6 2.7h2C14 6.1 15.6 5 17.6 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></svg></span>
+      </span>
+    </button>
+    <p class="hint" id="hint">Toca el sobre</p>
+  </div>
+</div>
+<canvas id="fireflies" aria-hidden="true"></canvas>
+<button type="button" class="music" id="music" aria-pressed="false"><span class="music-ico" id="music-ico">♪</span><span id="music-txt">Música</span></button>
+
+<script>
+/* ===== Personaliza aquí ===== */
+var NOMBRE = "Melany";        // titulo del calendario
+var APODO = "mi princesa";    // lo que dice el sobre
+var DE = "";            // por ejemplo "Juan"; si lo dejas vacío no se muestra
+var YEAR = 2026;
+/* ============================ */
+
+var DIAS = [
+  { t: "Mensaje", h: "Empieza la cuenta regresiva", b: "Durante 24 días vas a abrir una casilla por día. Algunas tienen palabras, otras planes, otras cupones. Aunque no nos veamos todos los días, quiero estar contigo en cada uno de ellos." , q: "Hay personas que hacen corto el camino, aunque estén lejos. Tú eres esa persona." },
+  { t: "Cupón", h: "Vale por una nota de voz larga", b: "Cuando la necesites, pídemela y te mando una nota de voz mía, larga y sin apuro. Para escuchar antes de dormir." , q: "Mi lugar favorito del mundo es donde estás tú." },
+  { t: "Mensaje", h: "Lo que más me gusta de ti", b: "Me encanta cómo te ríes cuando algo te da risa de verdad. Aunque no te escuche todos los días, ese sonido me acompaña." , q: "Tu risa es mi sonido favorito." },
+  { t: "Plan", h: "Tereré a la misma hora", b: "Esta semana, una tarde a la misma hora: tú en Atyrá y yo en Caraguatay, cada uno con su tereré bien frío y pensando en el otro. Elige el día y avísame." , q: "Contigo hasta el silencio se siente lindo." },
+  { t: "Reto", h: "Tres cosas lindas", b: "Piensa en tres cosas buenas que te pasaron hoy y cuéntamelas. Yo te cuento las mías." , q: "Si pudiera guardar un momento, sería cualquiera en el que estoy contigo." },
+  { t: "Cupón", h: "Vale por elegir la película", b: "Elige una película y yo la miro esta semana, aunque sea esa que ya viste cinco veces. Cuando nos veamos, la comentamos. Yo no me quejo." , q: "No importa cuántos kilómetros haya, siempre te siento cerca." },
+  { t: "Mensaje", h: "Gracias", b: "Gracias por esperarme y por hacer que la distancia se sienta más corta. Se nota más de lo que te lo digo." , q: "Esperarte es lindo cuando sé que vale la pena." },
+  { t: "Plan", h: "Día de la Virgen de Caacupé", b: "Hoy es feriado. Cada uno lo pasa en su casa, con su familia y a su manera, pero pensando en el otro. Que la Virgen cuide a los dos y nos junte pronto.", q: "Los días contigo pasan como si el reloj quisiera quedarse a mirar." },
+  { t: "Cupón", h: "Vale por una carta escrita a mano", b: "Te escribo una carta a mano, con letra fea y buenas intenciones. Te la entrego en cuanto nos veamos." , q: "Eres mi casualidad más linda y mi decisión más segura." },
+  { t: "Mensaje", h: "Cuándo supe", b: "Piensa en el momento en que supiste que esto iba en serio. Cuéntamelo hoy, yo te cuento el mío." , q: "Te elegí, te elijo y te voy a seguir eligiendo." },
+  { t: "Plan", h: "Helado a la par", b: "Esta noche cada uno se toma un helado en su casa y piensa en el otro. Con este calor, es obligatorio. El próximo que nos veamos, el helado lo pago yo." , q: "Cada día que pasa te quiero un poquito más, y eso que ya era mucho." },
+  { t: "Reto", h: "Nuestro recuerdo favorito", b: "Piensa en tu recuerdo favorito de nosotros dos, aunque sea de un ratito. Cuando nos veamos, cada uno cuenta el suyo y vemos si coincidimos. Y de paso nos sacamos la primera foto juntos.", q: "Tú le pones color hasta a los días grises." },
+  { t: "Cupón", h: "Vale por una cena que cocino yo", b: "La próxima vez que nos veamos, cocino yo. Menú a tu elección. Garantía de buena intención, no de buen resultado." , q: "Contigo hasta lo que recién empieza se siente especial." },
+  { t: "Mensaje", h: "Lo que admiro", b: "Admiro lo decidida que eres cuando algo te importa. Contigo aprendo a no rendirme." , q: "Eres mi paz en medio de cualquier apuro." },
+  { t: "Plan", h: "Elegimos fecha para vernos", b: "Abramos el calendario y pongamos una fecha para vernos antes de que termine el año. Una de verdad, con día y hora." , q: "Donde estés tú, ahí quiero estar yo." },
+  { t: "Mensaje", h: "Nuestro chiste", b: "Acuérdate de nuestro chiste interno, ese que nadie más entiende, y mándamelo hoy sin explicación." , q: "Mi corazón te tiene a ti como su lugar preferido." },
+  { t: "Cupón", h: "Vale por un ratito juntos", b: "Un rato para nosotros, sin apuros y sin presión: un tereré, una caminata o un helado, lo que tú prefieras. El día y el lugar los elegimos juntos.", q: "Gracias por ser mi hogar sin importar el lugar." },
+  { t: "Reto", h: "Una carta de tres líneas", b: "Escríbeme tres líneas sobre cómo fue este año. Yo haré lo mismo y las leemos juntos la próxima vez que nos veamos." , q: "Lo nuestro no se mide en días juntos, se mide en lo que sentimos." },
+  { t: "Plan", h: "Noche de luces", b: "Cada uno sale a ver las luces navideñas de su pueblo. Cuando nos veamos comparamos: las de Atyrá contra las de Caraguatay. Gana la que tenga más luces." , q: "Tu nombre es lo primero que quiero decir cuando algo me hace feliz." },
+  { t: "Mensaje", h: "Mi deseo favorito", b: "Este año mi deseo no es un regalo. Es que sigamos teniendo ganas de elegirnos todos los días, aunque haya kilómetros de por medio." , q: "Aunque nos separen los pueblos, nos une todo lo demás." },
+  { t: "Cupón", h: "Vale por un abrazo largo", b: "Cobrable apenas nos veamos, sin aviso previo. Dura hasta que digas basta." , q: "Si el amor se pudiera ver, sería igual que tú cuando sonríes." },
+  { t: "Plan", h: "Misma receta, cada uno en su casa", b: "Elegimos una receta para la mesa de Navidad y cada uno la prepara en su casa. Cuando nos veamos, decidimos cuál salió mejor." , q: "Contigo todo es más lindo, hasta esperar." },
+  { t: "Mensaje", h: "Casi llegamos", b: "Mañana es Nochebuena. Antes quiero decirte que, aunque nos veamos poco, este año valió la pena por ti." , q: "Te llevo conmigo en cada pensamiento bonito." },
+  { t: "Mensaje", h: "Feliz Nochebuena", b: "Esta fue la última casilla. Lo mejor de esta Navidad eres tú, estemos donde estemos. Te debo un abrazo grande y lo cobro en cuanto nos veamos." , q: "Feliz Navidad, mi princesa. Eres el mejor regalo que me dio la vida." }
+];
+
+var KEY = "adviento-" + YEAR;
+var grid = document.getElementById("grid");
+var dlg = document.getElementById("dlg");
+var test = false;
+var forceTest = false;
+var opened = {};
+var memOpened = {};
+
+function loadOpened() {
+  try { var raw = localStorage.getItem(KEY); opened = raw ? JSON.parse(raw) : {}; } catch (e) { opened = {}; }
+}
+function saveOpened() {
+  if (test) return;
+  try { localStorage.setItem(KEY, JSON.stringify(opened)); } catch (e) {}
+}
+function now() { return new Date(); }
+function realDay() {
+  var n = now();
+  if (n.getFullYear() > YEAR) return 24;
+  if (n.getFullYear() < YEAR || n.getMonth() < 11) return 0;
+  return Math.min(n.getDate(), 24);
+}
+function todayDay() {
+  var n = now();
+  return (n.getFullYear() === YEAR && n.getMonth() === 11 && n.getDate() <= 24) ? n.getDate() : 0;
+}
+function available() { return test ? 24 : realDay(); }
+function isOpened(d) { return test ? !!memOpened[d] : !!opened[d]; }
+function stateOf(d) {
+  if (isOpened(d)) return "opened";
+  if (d > available()) return "locked";
+  if (!test && d === todayDay()) return "today";
+  return "ready";
+}
+var LOCK = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/></svg>';
+var HEART = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.4 5c2 0 3.6 1.1 4.6 2.7h2C14 6.1 15.6 5 17.6 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></svg>';
+var LABEL = { locked: "bloqueada", ready: "lista para abrir", today: "la de hoy", opened: "abierta" };
+
+function render() {
+  test = forceTest || location.hash === "#probar";
+  document.getElementById("testbanner").hidden = !test;
+  var html = "";
+  var count = 0;
+  for (var d = 1; d <= 24; d++) {
+    var s = stateOf(d);
+    if (s === "opened") count++;
+    var ico = s === "locked" ? LOCK : (s === "opened" ? HEART : "");
+    html += '<button type="button" class="door" data-d="' + d + '" data-state="' + s + '"' + (d === 24 ? ' data-final="1"' : "") +
+      ' aria-label="Casilla ' + d + ', ' + LABEL[s] + '"><span class="n">' + d + '</span>' +
+      (ico ? '<span class="ico">' + ico + '</span>' : "") + '</button>';
+  }
+  grid.innerHTML = html;
+  document.getElementById("barfill").style.width = (count / 24 * 100) + "%";
+  var st = document.getElementById("status");
+  var av = available();
+  if (av === 0) {
+    var n = now();
+    var start = new Date(YEAR, 11, 1);
+    var today0 = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    var faltan = Math.round((start - today0) / 86400000);
+    if (faltan <= 1) st.textContent = "Mañana se abre la primera casilla.";
+    else st.textContent = "Faltan " + faltan + " días para abrir la primera casilla.";
+  } else {
+    var t = todayDay();
+    var msg = "Abriste " + count + " de 24.";
+    if (!test && t && !isOpened(t)) msg += " Hoy toca la casilla " + t + ".";
+    else if (!test && count === 24) msg += " Ya viste todo. Feliz Navidad.";
+    st.textContent = msg;
+  }
+}
+
+function openDoor(d) {
+  var item = DIAS[d - 1];
+  var fin = d === 24;
+  var badge = document.getElementById("dlg-n");
+  badge.textContent = d;
+  if (fin) badge.setAttribute("data-final", "1"); else badge.removeAttribute("data-final");
+  document.getElementById("dlg-chip").textContent = item.t;
+  document.getElementById("dlg-date").textContent = d + " de diciembre";
+  document.getElementById("dlg-title").textContent = item.h;
+  document.getElementById("dlg-body").textContent = item.b;
+  document.getElementById("dlg-frase").textContent = item.q;
+  if (test) memOpened[d] = true; else { opened[d] = true; saveOpened(); }
+  try { Musica.chime(); } catch (e) {}
+  if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+  render();
+}
+
+grid.addEventListener("click", function (e) {
+  var btn = e.target.closest(".door");
+  if (!btn) return;
+  var d = Number(btn.getAttribute("data-d"));
+  if (stateOf(d) === "locked") {
+    document.getElementById("status").textContent = "La casilla " + d + " se abre el " + d + " de diciembre.";
+    return;
+  }
+  openDoor(d);
+});
+function closeDlg() { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+document.getElementById("dlg-close").addEventListener("click", closeDlg);
+dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDlg(); });
+window.addEventListener("hashchange", render);
+(function () {
+  var taps = 0, t = null;
+  document.getElementById("titulo").addEventListener("click", function () {
+    taps++; clearTimeout(t); t = setTimeout(function () { taps = 0; }, 2500);
+    if (taps >= 5) { taps = 0; forceTest = !forceTest; render(); }
+  });
+})();
+
+document.getElementById("titulo").textContent = "Para " + NOMBRE;
+if (DE) document.getElementById("firma").textContent = "De Caraguatay a Atyrá, con todo mi cariño, " + DE + ".";
+loadOpened();
+render();
+
+/* Musica: caja de musica con "Noche de paz" (dominio publico), generada en el navegador */
+var Musica = (function () {
+  var ctx = null, master = null, on = false, timer = null, nextT = 0, idx = 0, B = 0.82;
+  var F = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392, A4: 440, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, C6: 1046.5 };
+  var M = [["G4",1.5],["A4",.5],["G4",1],["E4",3],["G4",1.5],["A4",.5],["G4",1],["E4",3],
+    ["D5",2],["D5",1],["B4",3],["C5",2],["C5",1],["G4",3],
+    ["A4",2],["A4",1],["C5",1.5],["B4",.5],["A4",1],["G4",1.5],["A4",.5],["G4",1],["E4",3],
+    ["A4",2],["A4",1],["C5",1.5],["B4",.5],["A4",1],["G4",1.5],["A4",.5],["G4",1],["E4",3],
+    ["D5",2],["D5",1],["F5",1.5],["D5",.5],["B4",1],["C5",3],["E5",3],
+    ["C5",1],["G4",1],["E4",1],["G4",1.5],["F4",.5],["D4",1],["C4",3]];
+  function setup() {
+    if (ctx) return true;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = 0;
+      var dly = ctx.createDelay(1); dly.delayTime.value = 0.38;
+      var fb = ctx.createGain(); fb.gain.value = 0.3;
+      var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2600;
+      master.connect(ctx.destination);
+      master.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); lp.connect(ctx.destination);
+      return true;
+    } catch (e) { ctx = null; return false; }
+  }
+  function note(freq, t, dur) {
+    var len = Math.max(dur * 1.5, 1.3);
+    var o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+    o1.type = "triangle"; o1.frequency.value = freq;
+    o2.type = "sine"; o2.frequency.value = freq * 3; g2.gain.value = 0.18;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.5, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+    o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
+    o1.start(t); o2.start(t); o1.stop(t + len + 0.05); o2.stop(t + len + 0.05);
+  }
+  function tick() {
+    if (!on) return;
+    while (nextT < ctx.currentTime + 1.6) {
+      var n = M[idx];
+      note(F[n[0]], nextT, n[1] * B);
+      nextT += n[1] * B; idx++;
+      if (idx >= M.length) { idx = 0; nextT += B * 3; }
+    }
+    timer = setTimeout(tick, 300);
+  }
+  function setUI() {
+    var b = document.getElementById("music");
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    document.getElementById("music-txt").textContent = on ? "Música activada" : "Música";
+    document.getElementById("music-ico").textContent = on ? "♫" : "♪";
+  }
+  function start() {
+    if (!setup()) { document.getElementById("music-txt").textContent = "Sin audio"; return; }
+    if (ctx.resume) ctx.resume();
+    on = true; setUI();
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setTargetAtTime(0.22, ctx.currentTime, 0.4);
+    nextT = ctx.currentTime + 0.15; idx = 0; tick();
+  }
+  function stop() {
+    on = false; setUI();
+    clearTimeout(timer);
+    if (ctx) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(0, ctx.currentTime, 0.15); }
+  }
+  function chime() {
+    if (!on || !ctx) return;
+    var t = ctx.currentTime + 0.02;
+    ["E5", "G5", "C6"].forEach(function (k, i) { note(F[k], t + i * 0.11, 0.9); });
+  }
+  var touched = false;
+  document.getElementById("music").addEventListener("click", function (e) { touched = true; if (on) stop(); else start(); });
+  function first(e) {
+    document.removeEventListener("pointerdown", first, true);
+    if (touched || on) return;
+    if (e.target && e.target.closest && e.target.closest("#music")) return;
+    start();
+  }
+  document.addEventListener("pointerdown", first, true);
+  return { chime: chime };
+})();
+
+/* Sobre de entrada: sobre -> nieve y adornos -> calendario */
+try { (function () {
+  var ov = document.getElementById("intro");
+  var wrap = document.getElementById("wrap");
+  var cv = document.getElementById("snow");
+  var ctx = cv.getContext("2d");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var testMode = location.hash === "#probar";
+  var n0 = new Date();
+  var key = "adviento-intro-" + n0.getFullYear() + "-" + (n0.getMonth() + 1) + "-" + n0.getDate();
+  var started = false, ended = false, heavy = false, flakes = [], W = 0, H = 0;
+  var seen = false;
+  document.getElementById("env-to").textContent = "Para " + APODO;
+  document.getElementById("greet-to").textContent = "Para " + APODO;
+
+  function show() { wrap.classList.remove("hold"); }
+  wrap.classList.add("hold");
+
+  var lights = document.getElementById("lights");
+  for (var i = 0; i < 16; i++) { var sp = document.createElement("span"); sp.style.animationDelay = (i * 0.17) + "s"; lights.appendChild(sp); }
+
+  function mk(top) {
+    var big = Math.random() < 0.22;
+    return { x: Math.random() * W, y: top ? -10 : Math.random() * H, r: big ? 3 + Math.random() * 3 : 0.8 + Math.random() * 1.6,
+      vy: 0.35 + Math.random() * 0.9, ph: Math.random() * 6.28, sw: 0.4 + Math.random() * 0.8, big: big };
+  }
+  function size() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    flakes = []; var n = Math.round(W * H / 14000);
+    for (var i = 0; i < n; i++) flakes.push(mk(false));
+  }
+  function loop(t) {
+    if (ov.hidden) return;
+    ctx.clearRect(0, 0, W, H);
+    if (heavy && flakes.length < Math.round(W * H / 4500)) { flakes.push(mk(true)); flakes.push(mk(true)); }
+    for (var i = 0; i < flakes.length; i++) {
+      var f = flakes[i];
+      if (!reduce) { f.y += f.vy * (heavy ? 1.5 : 1); f.x += Math.sin(t / 1100 + f.ph) * f.sw * 0.6; f.ph += 0.004; }
+      if (f.y > H + 12) { f.y = -10; f.x = Math.random() * W; }
+      ctx.globalAlpha = f.big ? 0.9 : 0.75;
+      if (f.big) {
+        ctx.strokeStyle = "#F4F8FC"; ctx.lineWidth = 1.1; ctx.lineCap = "round";
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.ph + t / 4000);
+        for (var k = 0; k < 3; k++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(-f.r, 0); ctx.lineTo(f.r, 0); ctx.stroke(); }
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#F4F8FC"; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.2832); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  }
+  size(); window.addEventListener("resize", size); requestAnimationFrame(loop);
+
+  function end() {
+    if (ended) return; ended = true;
+    ov.classList.add("out"); show();
+    setTimeout(function () { ov.hidden = true; }, reduce ? 0 : 1000);
+  }
+  document.getElementById("envbtn").addEventListener("click", function () {
+    if (started) return; started = true;
+    if (reduce) { end(); return; }
+    ov.classList.add("open");
+    setTimeout(function () { ov.classList.add("snow"); heavy = true; }, 1200);
+    setTimeout(end, 3900);
+  });
+  ov.addEventListener("click", function (e) { if (started && ov.classList.contains("snow")) end(); });
+})(); } catch (err) {
+  var o = document.getElementById("intro"); if (o) o.hidden = true;
+  document.getElementById("wrap").classList.remove("hold");
+}
+
+/* Luciernagas */
+(function () {
+  var cv = document.getElementById("fireflies");
+  var ctx = cv.getContext("2d");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W = 0, H = 0, flies = [];
+  var glow = (getComputedStyle(document.documentElement).getPropertyValue("--glow") || "#F2B04A").trim();
+  function rgb(hex) {
+    var h = hex.replace("#", "");
+    return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+  }
+  var c = rgb(glow.length === 7 ? glow : "#F2B04A");
+  function size() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.max(14, Math.min(34, Math.round(W * H / 26000)));
+    flies = [];
+    for (var i = 0; i < n; i++) {
+      flies.push({ x: Math.random() * W, y: Math.random() * H, r: 1.2 + Math.random() * 1.8,
+        vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.2, p: Math.random() * 6.28, s: 0.6 + Math.random() * 0.9 });
+    }
+  }
+  function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < flies.length; i++) {
+      var f = flies[i];
+      if (!reduce) {
+        f.x += f.vx + Math.sin(t / 1800 + f.p) * 0.12;
+        f.y += f.vy + Math.cos(t / 2100 + f.p) * 0.1;
+        if (f.x < -10) f.x = W + 10; if (f.x > W + 10) f.x = -10;
+        if (f.y < -10) f.y = H + 10; if (f.y > H + 10) f.y = -10;
+      }
+      var a = reduce ? 0.5 : 0.15 + 0.55 * (0.5 + 0.5 * Math.sin(t / 900 * f.s + f.p));
+      var g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 7);
+      g.addColorStop(0, "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")");
+      g.addColorStop(1, "rgba(" + c[0] + "," + c[1] + "," + c[2] + ",0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r * 7, 0, 6.2832); ctx.fill();
+    }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  size();
+  window.addEventListener("resize", size);
+  if (reduce) frame(0); else requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
